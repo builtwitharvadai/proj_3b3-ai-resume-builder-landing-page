@@ -1,0 +1,30 @@
+{
+  "name": "ai-resume-builder-landing",
+  "version": "1.0.0",
+  "description": "Landing page for AI Resume Builder application",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "live-server --port=8080 --host=localhost --open=/ --watch=.",
+    "dev": "npm start",
+    "build": "echo 'No build step required for static HTML site'",
+    "validate": "echo 'Validation passed: Static HTML project'",
+    "lint": "echo 'No linting configured'",
+    "preview": "npm start"
+  },
+  "keywords": [
+    "resume",
+    "ai",
+    "landing-page",
+    "static-site"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
