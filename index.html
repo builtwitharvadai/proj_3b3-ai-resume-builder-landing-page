@@ -4,24 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>AI Resume Builder - Create Professional Resumes in Minutes</title>
-  <meta name="description" content="Build professional resumes with AI assistance. Choose from multiple templates and create your perfect resume in minutes.">
+  <meta name="description" content="Build professional resumes with AI-powered assistance. Choose from multiple templates, get instant feedback, and land your dream job faster.">
+  
+  <meta property="og:title" content="AI Resume Builder - Create Professional Resumes in Minutes">
+  <meta property="og:description" content="Build professional resumes with AI-powered assistance. Choose from multiple templates, get instant feedback, and land your dream job faster.">
+  <meta property="og:type" content="website">
   
   <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
   
-  <header>
-    <nav>
-      <ul>
+  <header role="banner">
+    <nav role="navigation" aria-label="Main navigation">
+      <ul role="list">
         <li><a href="#hero">Home</a></li>
         <li><a href="#features">Features</a></li>
         <li><a href="#testimonials">Testimonials</a></li>
+        <li><a href="#contact">Contact</a></li>
       </ul>
     </nav>
   </header>
-
-  <main id="main">
+  
+  <main id="main" role="main">
     <section id="hero">
       <div class="hero-background" data-parallax></div>
       <div class="hero-content">
@@ -35,217 +40,164 @@
     </section>
 
     <section id="features">
-      <h2>Why Choose Our AI Resume Builder</h2>
-      
+      <h2>Why Choose Our AI Resume Builder?</h2>
       <div class="features-grid">
-        <article class="feature-card" data-animate-fade-in>
+        <div class="feature-card" data-animate-fade-in>
           <div class="feature-icon" aria-hidden="true">🤖</div>
-          <h3>AI-Powered Content</h3>
-          <p>Our advanced AI helps you write compelling resume content that highlights your achievements and skills effectively.</p>
-        </article>
-
-        <article class="feature-card" data-animate-fade-in data-animate-delay="100">
+          <h3>AI-Powered Suggestions</h3>
+          <p>Get intelligent recommendations for content, formatting, and keywords tailored to your industry.</p>
+        </div>
+        <div class="feature-card" data-animate-fade-in data-animate-delay="100">
           <div class="feature-icon" aria-hidden="true">📄</div>
           <h3>Professional Templates</h3>
-          <p>Choose from a variety of professionally designed templates that are optimized for ATS systems and recruiters.</p>
-        </article>
-
-        <article class="feature-card" data-animate-fade-in data-animate-delay="200">
+          <p>Choose from a variety of ATS-friendly templates designed by career experts.</p>
+        </div>
+        <div class="feature-card" data-animate-fade-in data-animate-delay="200">
           <div class="feature-icon" aria-hidden="true">⚡</div>
           <h3>Quick & Easy</h3>
-          <p>Create a complete resume in minutes with our intuitive interface and smart suggestions.</p>
-        </article>
-
-        <article class="feature-card" data-animate-fade-in data-animate-delay="300">
+          <p>Build your resume in minutes with our intuitive interface and smart autofill features.</p>
+        </div>
+        <div class="feature-card" data-animate-fade-in data-animate-delay="300">
           <div class="feature-icon" aria-hidden="true">✓</div>
-          <h3>ATS-Friendly</h3>
-          <p>All our templates are designed to pass Applicant Tracking Systems, ensuring your resume gets seen by recruiters.</p>
-        </article>
+          <h3>ATS Optimized</h3>
+          <p>Ensure your resume passes Applicant Tracking Systems with our optimization tools.</p>
+        </div>
       </div>
 
       <div class="template-preview-section">
-        <h3>Professional Resume Templates</h3>
-        
-        <div class="carousel-container" data-carousel>
-          <div class="carousel-track">
+        <h3>Choose from Professional Templates</h3>
+        <div class="carousel-container">
+          <div class="carousel-track" role="region" aria-label="Resume template carousel">
             <div class="carousel-slide">
-              <img 
-                src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=600&h=750&fit=crop&auto=format&q=80" 
-                alt="Modern professional resume template with clean layout"
-                loading="lazy"
-                decoding="async"
-              >
+              <img src="https://via.placeholder.com/800x1000/4f46e5/ffffff?text=Modern+Template" alt="Modern resume template with clean design" loading="lazy">
               <p class="template-name">Modern Professional</p>
             </div>
-            
             <div class="carousel-slide">
-              <img 
-                src="https://images.unsplash.com/photo-1586281380117-5a60ae2050cc?w=600&h=750&fit=crop&auto=format&q=80" 
-                alt="Creative resume template with bold design elements"
-                loading="lazy"
-                decoding="async"
-              >
-              <p class="template-name">Creative Bold</p>
+              <img src="https://via.placeholder.com/800x1000/764ba2/ffffff?text=Classic+Template" alt="Classic resume template with traditional layout" loading="lazy">
+              <p class="template-name">Classic Executive</p>
             </div>
-            
             <div class="carousel-slide">
-              <img 
-                src="https://images.unsplash.com/photo-1586281380614-bb1f0f1d2c8a?w=600&h=750&fit=crop&auto=format&q=80" 
-                alt="Executive resume template with sophisticated styling"
-                loading="lazy"
-                decoding="async"
-              >
-              <p class="template-name">Executive</p>
-            </div>
-            
-            <div class="carousel-slide">
-              <img 
-                src="https://images.unsplash.com/photo-1586281380923-c0e8e07e1e8e?w=600&h=750&fit=crop&auto=format&q=80" 
-                alt="Minimalist resume template with clean lines"
-                loading="lazy"
-                decoding="async"
-              >
-              <p class="template-name">Minimalist</p>
+              <img src="https://via.placeholder.com/800x1000/667eea/ffffff?text=Creative+Template" alt="Creative resume template with unique design" loading="lazy">
+              <p class="template-name">Creative Designer</p>
             </div>
           </div>
-
-          <button 
-            class="carousel-button carousel-button-prev" 
-            data-carousel-prev
-            aria-label="Previous template"
-          >
-            <i aria-hidden="true">‹</i>
-          </button>
-          
-          <button 
-            class="carousel-button carousel-button-next" 
-            data-carousel-next
-            aria-label="Next template"
-          >
-            <i aria-hidden="true">›</i>
-          </button>
-
-          <div class="carousel-indicators" role="tablist" aria-label="Template slides">
-            <button 
-              data-carousel-indicator="0" 
-              aria-label="Go to slide 1"
-              aria-selected="true"
-              role="tab"
-              tabindex="0"
-            ></button>
-            <button 
-              data-carousel-indicator="1" 
-              aria-label="Go to slide 2"
-              aria-selected="false"
-              role="tab"
-              tabindex="-1"
-            ></button>
-            <button 
-              data-carousel-indicator="2" 
-              aria-label="Go to slide 3"
-              aria-selected="false"
-              role="tab"
-              tabindex="-1"
-            ></button>
-            <button 
-              data-carousel-indicator="3" 
-              aria-label="Go to slide 4"
-              aria-selected="false"
-              role="tab"
-              tabindex="-1"
-            ></button>
+          <button class="carousel-button carousel-button-prev" aria-label="Previous template">‹</button>
+          <button class="carousel-button carousel-button-next" aria-label="Next template">›</button>
+          <div class="carousel-indicators" role="tablist" aria-label="Template selection">
+            <button role="tab" aria-selected="true" aria-label="Template 1"></button>
+            <button role="tab" aria-selected="false" aria-label="Template 2"></button>
+            <button role="tab" aria-selected="false" aria-label="Template 3"></button>
           </div>
         </div>
       </div>
     </section>
 
     <section id="testimonials">
-      <h2>Success Stories from Our Users</h2>
-      
+      <h2>What Our Users Say</h2>
       <div class="testimonials-grid">
-        <article class="testimonial-card" data-animate-fade-in>
-          <img 
-            src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&auto=format&q=80" 
-            alt="Sarah Johnson"
-            class="testimonial-photo"
-            loading="lazy"
-            decoding="async"
-          >
+        <div class="testimonial-card" data-animate-fade-in>
+          <img src="https://via.placeholder.com/80/4f46e5/ffffff?text=JS" alt="John Smith" class="testimonial-photo" loading="lazy">
           <div class="testimonial-content">
-            <blockquote cite="https://example.com/testimonials">
-              <p>"This AI resume builder helped me land my dream job at a Fortune 500 company. The templates are professional and the AI suggestions made my experience shine. I got 3 interview calls within a week!"</p>
+            <blockquote>
+              <p>"This AI resume builder helped me land my dream job! The suggestions were spot-on and the templates looked incredibly professional."</p>
             </blockquote>
             <cite>
-              <strong class="testimonial-name">Sarah Johnson</strong>
-              <span class="testimonial-title">Marketing Manager</span>
+              <span class="testimonial-name">John Smith</span>
+              <span class="testimonial-title">Software Engineer at Tech Corp</span>
             </cite>
           </div>
-        </article>
-
-        <article class="testimonial-card" data-animate-fade-in data-animate-delay="100">
-          <img 
-            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&auto=format&q=80" 
-            alt="Michael Chen"
-            class="testimonial-photo"
-            loading="lazy"
-            decoding="async"
-          >
+        </div>
+        <div class="testimonial-card" data-animate-fade-in data-animate-delay="100">
+          <img src="https://via.placeholder.com/80/764ba2/ffffff?text=SJ" alt="Sarah Johnson" class="testimonial-photo" loading="lazy">
           <div class="testimonial-content">
-            <blockquote cite="https://example.com/testimonials">
-              <p>"As a software engineer, I was skeptical about resume builders, but this one impressed me. The ATS optimization is real - my resume started getting past automated filters. Highly recommend!"</p>
+            <blockquote>
+              <p>"I was able to create a professional resume in under 15 minutes. The AI suggestions really helped me highlight my best achievements."</p>
             </blockquote>
             <cite>
-              <strong class="testimonial-name">Michael Chen</strong>
-              <span class="testimonial-title">Senior Software Engineer</span>
+              <span class="testimonial-name">Sarah Johnson</span>
+              <span class="testimonial-title">Marketing Manager at Brand Co</span>
             </cite>
           </div>
-        </article>
-
-        <article class="testimonial-card" data-animate-fade-in data-animate-delay="200">
-          <img 
-            src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&auto=format&q=80" 
-            alt="Emily Rodriguez"
-            class="testimonial-photo"
-            loading="lazy"
-            decoding="async"
-          >
-          <div class="testimonial-content">
-            <blockquote cite="https://example.com/testimonials">
-              <p>"I was struggling to update my resume after 10 years in the same role. The AI helped me articulate my achievements in a modern way. I received multiple offers and negotiated a 30% salary increase!"</p>
-            </blockquote>
-            <cite>
-              <strong class="testimonial-name">Emily Rodriguez</strong>
-              <span class="testimonial-title">Project Manager</span>
-            </cite>
-          </div>
-        </article>
-
-        <article class="testimonial-card" data-animate-fade-in data-animate-delay="300">
-          <img 
-            src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&auto=format&q=80" 
-            alt="David Thompson"
-            class="testimonial-photo"
-            loading="lazy"
-            decoding="async"
-          >
-          <div class="testimonial-content">
-            <blockquote cite="https://example.com/testimonials">
-              <p>"The templates are clean and professional. I created my resume in under 20 minutes and it looks like it was done by a professional designer. Best investment in my career transition!"</p>
-            </blockquote>
-            <cite>
-              <strong class="testimonial-name">David Thompson</strong>
-              <span class="testimonial-title">Financial Analyst</span>
-            </cite>
-          </div>
-        </article>
+        </div>
       </div>
+    </section>
+
+    <section id="contact">
+      <h2>Ready to Build Your Perfect Resume?</h2>
+      <form method="POST" action="/submit" novalidate>
+        <fieldset>
+          <legend class="sr-only">Contact Information</legend>
+          
+          <div class="field">
+            <label for="email">
+              Email Address
+              <span aria-label="required">*</span>
+            </label>
+            <input 
+              type="email" 
+              id="email" 
+              name="email"
+              required
+              aria-required="true"
+              aria-invalid="false"
+              aria-describedby="email-error email-hint"
+              autocomplete="email"
+              inputmode="email"
+              placeholder="your.email@example.com"
+            >
+            <span id="email-hint" class="hint">Get started with your free account</span>
+            <span id="email-error" class="error" role="alert" aria-live="polite"></span>
+          </div>
+        </fieldset>
+        
+        <button 
+          type="submit"
+          aria-busy="false"
+          aria-live="polite"
+          aria-label="Get started"
+        >
+          <span class="button-text">Get Started Free</span>
+        </button>
+      </form>
+      
+      <p style="text-align: center; margin-top: var(--space-lg);">
+        <a href="https://example.com/get-started" style="color: var(--color-primary); text-decoration: none; font-weight: 600;">Or start building your resume now →</a>
+      </p>
     </section>
   </main>
 
-  <footer>
-    <p>&copy; 2024 AI Resume Builder. All rights reserved.</p>
+  <footer role="contentinfo">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>AI Resume Builder</h3>
+        <p>Create professional resumes with AI-powered assistance.</p>
+      </div>
+      
+      <div class="footer-section">
+        <h4>Quick Links</h4>
+        <nav aria-label="Footer navigation">
+          <ul role="list">
+            <li><a href="#hero">Home</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#testimonials">Testimonials</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </nav>
+      </div>
+      
+      <div class="footer-section">
+        <h4>Legal</h4>
+        <ul role="list">
+          <li><a href="/privacy">Privacy Policy</a></li>
+          <li><a href="/terms">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <p style="text-align: center; margin-top: var(--space-lg); padding-top: var(--space-lg); border-top: 1px solid rgba(255, 255, 255, 0.1);">&copy; 2024 AI Resume Builder. All rights reserved.</p>
   </footer>
 
+  <script src="assets/js/carousel.js"></script>
   <script src="assets/js/main.js"></script>
 </body>
 </html>
