@@ -1,603 +1,260 @@
 /**
- * AI Resume Builder - Main JavaScript Module
- * Production-ready interactive functionality with modern ES6+ patterns
- * 
- * @module main
- * @version 1.0.0
- * @description Core JavaScript functionality for landing page interactions,
- *              smooth scrolling, mobile navigation, and animation triggers
+ * Main JavaScript for AI Resume Builder Landing Page
+ * Implements hero section animations, parallax effects, and scroll interactions
  */
 
 (function() {
   'use strict';
 
-  /**
-   * Application state management
-   * Centralized state for tracking UI interactions and component states
-   */
-  const AppState = {
-    mobileMenuOpen: false,
-    scrollPosition: 0,
-    isScrolling: false,
-    activeSection: null,
-    observers: new Map(),
+  // Check if animations are enabled via CSS variable
+  const getAnimationEnabled = () => {
+    const enableAnimations = getComputedStyle(document.documentElement)
+      .getPropertyValue('--enable-animations')
+      .trim();
+    return enableAnimations !== '0';
+  };
+
+  // Check for reduced motion preference
+  const prefersReducedMotion = () => {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  };
+
+  // Parallax scrolling effect for hero background
+  let ticking = false;
+  let lastScrollY = 0;
+
+  const updateParallax = () => {
+    const heroBackground = document.querySelector('[data-parallax]');
+    if (!heroBackground) return;
+
+    const scrollY = window.pageYOffset;
+    const heroSection = document.getElementById('hero');
     
-    /**
-     * Update state and trigger side effects
-     * @param {string} key - State property to update
-     * @param {*} value - New value
-     */
-    setState(key, value) {
-      this[key] = value;
-      this.notifyObservers(key, value);
-    },
+    if (!heroSection) return;
+
+    const heroBottom = heroSection.offsetTop + heroSection.offsetHeight;
     
-    /**
-     * Register observer for state changes
-     * @param {string} key - State property to observe
-     * @param {Function} callback - Callback function
-     */
-    observe(key, callback) {
-      if (!this.observers.has(key)) {
-        this.observers.set(key, new Set());
-      }
-      this.observers.get(key).add(callback);
-    },
+    // Only apply parallax when hero section is visible
+    if (scrollY < heroBottom) {
+      const parallaxSpeed = 0.5;
+      const translateY = scrollY * parallaxSpeed;
+      heroBackground.style.transform = `translate3d(0, ${translateY}px, 0)`;
+    }
     
-    /**
-     * Notify all observers of state change
-     * @param {string} key - Changed state property
-     * @param {*} value - New value
-     */
-    notifyObservers(key, value) {
-      const callbacks = this.observers.get(key);
-      if (callbacks) {
-        callbacks.forEach(callback => {
-          try {
-            callback(value);
-          } catch (error) {
-            console.error(`Observer callback error for ${key}:`, error);
-          }
-        });
-      }
+    ticking = false;
+  };
+
+  const requestParallaxUpdate = () => {
+    lastScrollY = window.pageYOffset;
+    
+    if (!ticking) {
+      requestAnimationFrame(updateParallax);
+      ticking = true;
     }
   };
 
-  /**
-   * DOM element cache for performance optimization
-   * Prevents repeated DOM queries
-   */
-  const DOMCache = {
-    elements: new Map(),
+  // Initialize parallax effect
+  const initParallax = () => {
+    if (prefersReducedMotion() || !getAnimationEnabled()) {
+      return;
+    }
+
+    window.addEventListener('scroll', requestParallaxUpdate, { passive: true });
     
-    /**
-     * Get cached element or query and cache it
-     * @param {string} selector - CSS selector
-     * @returns {Element|null} DOM element
-     */
-    get(selector) {
-      if (!this.elements.has(selector)) {
-        const element = document.querySelector(selector);
-        if (element) {
-          this.elements.set(selector, element);
-        }
-        return element;
-      }
-      return this.elements.get(selector);
-    },
+    // Initial update
+    updateParallax();
+  };
+
+  // Smooth scroll for CTA button
+  const initSmoothScroll = () => {
+    const ctaLink = document.querySelector('.hero-actions a[href^="#"]');
     
-    /**
-     * Get all matching elements
-     * @param {string} selector - CSS selector
-     * @returns {NodeList} List of DOM elements
-     */
-    getAll(selector) {
-      return document.querySelectorAll(selector);
-    },
-    
-    /**
-     * Clear cache (useful for dynamic content)
-     */
-    clear() {
-      this.elements.clear();
-    }
-  };
+    if (!ctaLink) return;
 
-  /**
-   * Smooth scroll utility with easing
-   * Provides smooth scrolling to target elements with configurable behavior
-   */
-  const SmoothScroll = {
-    /**
-     * Scroll to target element with smooth animation
-     * @param {Element} target - Target element to scroll to
-     * @param {Object} options - Scroll options
-     */
-    scrollTo(target, options = {}) {
-      if (!target) {
-        console.warn('SmoothScroll: Target element not found');
-        return;
-      }
-
-      const {
-        offset = 80,
-        behavior = 'smooth',
-        block = 'start'
-      } = options;
-
-      const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
-      
-      try {
-        window.scrollTo({
-          top: targetPosition,
-          behavior: behavior
-        });
-      } catch (error) {
-        console.error('SmoothScroll error:', error);
-        window.scrollTo(0, targetPosition);
-      }
-    },
-
-    /**
-     * Initialize smooth scroll for all anchor links
-     */
-    init() {
-      const anchorLinks = DOMCache.getAll('a[href^="#"]');
-      
-      anchorLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-          const href = link.getAttribute('href');
-          
-          if (href === '#' || href === '#!') {
-            e.preventDefault();
-            return;
-          }
-
-          const targetId = href.substring(1);
-          const target = document.getElementById(targetId);
-
-          if (target) {
-            e.preventDefault();
-            this.scrollTo(target);
-            
-            if (AppState.mobileMenuOpen) {
-              MobileMenu.close();
-            }
-
-            if ('pushState' in history) {
-              history.pushState(null, '', href);
-            }
-          }
-        });
-      });
-    }
-  };
-
-  /**
-   * Mobile navigation menu controller
-   * Handles mobile menu toggle, accessibility, and animations
-   */
-  const MobileMenu = {
-    button: null,
-    menu: null,
-    initialized: false,
-
-    /**
-     * Initialize mobile menu functionality
-     */
-    init() {
-      if (this.initialized) return;
-
-      this.button = DOMCache.get('[aria-controls="mobile-menu"]');
-      this.menu = DOMCache.get('#mobile-menu');
-
-      if (!this.button || !this.menu) {
-        console.warn('MobileMenu: Required elements not found');
-        return;
-      }
-
-      this.button.addEventListener('click', () => this.toggle());
-      
-      this.menu.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => this.close());
-      });
-
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && AppState.mobileMenuOpen) {
-          this.close();
-        }
-      });
-
-      this.initialized = true;
-    },
-
-    /**
-     * Toggle mobile menu open/closed
-     */
-    toggle() {
-      if (AppState.mobileMenuOpen) {
-        this.close();
-      } else {
-        this.open();
-      }
-    },
-
-    /**
-     * Open mobile menu
-     */
-    open() {
-      if (!this.menu || !this.button) return;
-
-      this.menu.classList.remove('hidden');
-      this.button.setAttribute('aria-expanded', 'true');
-      AppState.setState('mobileMenuOpen', true);
-      
-      document.body.style.overflow = 'hidden';
-      
-      this.menu.querySelectorAll('a')[0]?.focus();
-    },
-
-    /**
-     * Close mobile menu
-     */
-    close() {
-      if (!this.menu || !this.button) return;
-
-      this.menu.classList.add('hidden');
-      this.button.setAttribute('aria-expanded', 'false');
-      AppState.setState('mobileMenuOpen', false);
-      
-      document.body.style.overflow = '';
-      
-      this.button.focus();
-    }
-  };
-
-  /**
-   * Intersection Observer for scroll animations
-   * Triggers animations when elements enter viewport
-   */
-  const ScrollAnimations = {
-    observer: null,
-    animatedElements: new WeakSet(),
-
-    /**
-     * Initialize scroll-triggered animations
-     */
-    init() {
-      if (!('IntersectionObserver' in window)) {
-        console.warn('IntersectionObserver not supported');
-        return;
-      }
-
-      const options = {
-        root: null,
-        rootMargin: '0px 0px -100px 0px',
-        threshold: 0.1
-      };
-
-      this.observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting && !this.animatedElements.has(entry.target)) {
-            this.animateElement(entry.target);
-            this.animatedElements.add(entry.target);
-          }
-        });
-      }, options);
-
-      this.observeElements();
-    },
-
-    /**
-     * Observe elements for animation
-     */
-    observeElements() {
-      const elementsToAnimate = [
-        ...DOMCache.getAll('section'),
-        ...DOMCache.getAll('article'),
-        ...DOMCache.getAll('.animate-on-scroll')
-      ];
-
-      elementsToAnimate.forEach(element => {
-        if (element) {
-          this.observer.observe(element);
-        }
-      });
-    },
-
-    /**
-     * Apply animation to element
-     * @param {Element} element - Element to animate
-     */
-    animateElement(element) {
-      element.style.opacity = '0';
-      element.style.transform = 'translateY(20px)';
-      
-      requestAnimationFrame(() => {
-        element.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
-        element.style.opacity = '1';
-        element.style.transform = 'translateY(0)';
-      });
-    },
-
-    /**
-     * Cleanup observer
-     */
-    destroy() {
-      if (this.observer) {
-        this.observer.disconnect();
-      }
-    }
-  };
-
-  /**
-   * Active section tracker for navigation highlighting
-   * Updates navigation based on scroll position
-   */
-  const SectionTracker = {
-    sections: [],
-    navLinks: [],
-
-    /**
-     * Initialize section tracking
-     */
-    init() {
-      this.sections = Array.from(DOMCache.getAll('section[id]'));
-      this.navLinks = Array.from(DOMCache.getAll('nav a[href^="#"]'));
-
-      if (this.sections.length === 0) return;
-
-      let ticking = false;
-      
-      window.addEventListener('scroll', () => {
-        if (!ticking) {
-          window.requestAnimationFrame(() => {
-            this.updateActiveSection();
-            ticking = false;
-          });
-          ticking = true;
-        }
-      });
-
-      this.updateActiveSection();
-    },
-
-    /**
-     * Update active section based on scroll position
-     */
-    updateActiveSection() {
-      const scrollPosition = window.pageYOffset + 100;
-
-      let currentSection = null;
-
-      for (const section of this.sections) {
-        const sectionTop = section.offsetTop;
-        const sectionHeight = section.offsetHeight;
-
-        if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-          currentSection = section.id;
-          break;
-        }
-      }
-
-      if (currentSection !== AppState.activeSection) {
-        AppState.setState('activeSection', currentSection);
-        this.highlightNavLink(currentSection);
-      }
-    },
-
-    /**
-     * Highlight active navigation link
-     * @param {string} sectionId - Active section ID
-     */
-    highlightNavLink(sectionId) {
-      this.navLinks.forEach(link => {
-        const href = link.getAttribute('href');
-        if (href === `#${sectionId}`) {
-          link.classList.add('text-blue-600', 'font-semibold');
-        } else {
-          link.classList.remove('text-blue-600', 'font-semibold');
-        }
-      });
-    }
-  };
-
-  /**
-   * Form validation and handling
-   * Provides client-side validation for contact form
-   */
-  const FormHandler = {
-    /**
-     * Initialize form handling
-     */
-    init() {
-      const form = DOMCache.get('form[action="/contact"]');
-      if (!form) return;
-
-      form.addEventListener('submit', (e) => this.handleSubmit(e, form));
-
-      const inputs = form.querySelectorAll('input, textarea');
-      inputs.forEach(input => {
-        input.addEventListener('blur', () => this.validateField(input));
-        input.addEventListener('input', () => this.clearError(input));
-      });
-    },
-
-    /**
-     * Handle form submission
-     * @param {Event} e - Submit event
-     * @param {HTMLFormElement} form - Form element
-     */
-    handleSubmit(e, form) {
+    ctaLink.addEventListener('click', (e) => {
       e.preventDefault();
+      
+      const targetId = ctaLink.getAttribute('href');
+      const targetElement = document.querySelector(targetId);
+      
+      if (!targetElement) return;
 
-      const isValid = this.validateForm(form);
+      const headerOffset = 80;
+      const elementPosition = targetElement.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
-      if (isValid) {
-        console.log('Form is valid, ready for submission');
-        
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
-        console.log('Form data:', data);
-      }
-    },
-
-    /**
-     * Validate entire form
-     * @param {HTMLFormElement} form - Form to validate
-     * @returns {boolean} Validation result
-     */
-    validateForm(form) {
-      const inputs = form.querySelectorAll('input[required], textarea[required]');
-      let isValid = true;
-
-      inputs.forEach(input => {
-        if (!this.validateField(input)) {
-          isValid = false;
-        }
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
       });
-
-      return isValid;
-    },
-
-    /**
-     * Validate individual field
-     * @param {HTMLInputElement} field - Field to validate
-     * @returns {boolean} Validation result
-     */
-    validateField(field) {
-      const value = field.value.trim();
-      const type = field.type;
-      let isValid = true;
-      let errorMessage = '';
-
-      if (field.hasAttribute('required') && !value) {
-        isValid = false;
-        errorMessage = 'This field is required';
-      } else if (type === 'email' && value) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(value)) {
-          isValid = false;
-          errorMessage = 'Please enter a valid email address';
-        }
-      }
-
-      if (!isValid) {
-        this.showError(field, errorMessage);
-      } else {
-        this.clearError(field);
-      }
-
-      return isValid;
-    },
-
-    /**
-     * Show field error
-     * @param {HTMLInputElement} field - Field with error
-     * @param {string} message - Error message
-     */
-    showError(field, message) {
-      this.clearError(field);
-
-      field.classList.add('border-red-500');
-      field.setAttribute('aria-invalid', 'true');
-
-      const errorDiv = document.createElement('div');
-      errorDiv.className = 'text-red-500 text-sm mt-1';
-      errorDiv.textContent = message;
-      errorDiv.setAttribute('role', 'alert');
-
-      field.parentElement.appendChild(errorDiv);
-    },
-
-    /**
-     * Clear field error
-     * @param {HTMLInputElement} field - Field to clear error from
-     */
-    clearError(field) {
-      field.classList.remove('border-red-500');
-      field.removeAttribute('aria-invalid');
-
-      const errorDiv = field.parentElement.querySelector('.text-red-500');
-      if (errorDiv) {
-        errorDiv.remove();
-      }
-    }
+    });
   };
 
-  /**
-   * Performance monitoring utility
-   * Tracks page performance metrics
-   */
-  const PerformanceMonitor = {
-    /**
-     * Log performance metrics
-     */
-    logMetrics() {
-      if (!('performance' in window)) return;
-
-      window.addEventListener('load', () => {
-        setTimeout(() => {
-          const perfData = window.performance.timing;
-          const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
-          const connectTime = perfData.responseEnd - perfData.requestStart;
-          const renderTime = perfData.domComplete - perfData.domLoading;
-
-          console.log('Performance Metrics:', {
-            pageLoadTime: `${pageLoadTime}ms`,
-            connectTime: `${connectTime}ms`,
-            renderTime: `${renderTime}ms`
-          });
-        }, 0);
+  // Intersection Observer for scroll-triggered animations
+  const initScrollAnimations = () => {
+    if (prefersReducedMotion() || !getAnimationEnabled()) {
+      // Make elements visible immediately if animations are disabled
+      const animatedElements = document.querySelectorAll('[data-animate-fade-in]');
+      animatedElements.forEach(el => {
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
       });
+      return;
     }
-  };
 
-  /**
-   * Application initialization
-   * Coordinates initialization of all modules
-   */
-  const App = {
-    /**
-     * Initialize application
-     */
-    init() {
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => this.bootstrap());
-      } else {
-        this.bootstrap();
-      }
-    },
-
-    /**
-     * Bootstrap all application modules
-     */
-    bootstrap() {
-      try {
-        SmoothScroll.init();
-        MobileMenu.init();
-        ScrollAnimations.init();
-        SectionTracker.init();
-        FormHandler.init();
-        PerformanceMonitor.logMetrics();
-
-        console.log('AI Resume Builder initialized successfully');
-      } catch (error) {
-        console.error('Application initialization error:', error);
-      }
-    }
-  };
-
-  App.init();
-
-  if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-      AppState,
-      SmoothScroll,
-      MobileMenu,
-      ScrollAnimations,
-      SectionTracker,
-      FormHandler
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
     };
+
+    const observerCallback = (entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    // Observe all elements with animation attributes
+    const animatedElements = document.querySelectorAll('[data-animate-fade-in]');
+    animatedElements.forEach(el => {
+      observer.observe(el);
+    });
+  };
+
+  // Button interaction enhancements
+  const initButtonInteractions = () => {
+    const ctaButton = document.querySelector('.hero-actions button');
+    
+    if (!ctaButton) return;
+
+    // Add ripple effect on click
+    ctaButton.addEventListener('click', function(e) {
+      const ripple = document.createElement('span');
+      const rect = this.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      const x = e.clientX - rect.left - size / 2;
+      const y = e.clientY - rect.top - size / 2;
+
+      ripple.style.cssText = `
+        position: absolute;
+        width: ${size}px;
+        height: ${size}px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        left: ${x}px;
+        top: ${y}px;
+        pointer-events: none;
+        transform: scale(0);
+        animation: ripple 0.6s ease-out;
+      `;
+
+      this.appendChild(ripple);
+
+      setTimeout(() => ripple.remove(), 600);
+    });
+
+    // Add CSS for ripple animation if not exists
+    if (!document.getElementById('ripple-animation-style')) {
+      const style = document.createElement('style');
+      style.id = 'ripple-animation-style';
+      style.textContent = `
+        @keyframes ripple {
+          to {
+            transform: scale(4);
+            opacity: 0;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+  };
+
+  // Performance monitoring
+  const measurePerformance = () => {
+    if (!window.performance || !window.performance.mark) return;
+
+    window.performance.mark('hero-animations-start');
+
+    // Measure time to interactive
+    window.addEventListener('load', () => {
+      window.performance.mark('hero-animations-complete');
+      
+      try {
+        window.performance.measure(
+          'hero-animations-duration',
+          'hero-animations-start',
+          'hero-animations-complete'
+        );
+
+        const measure = window.performance.getEntriesByName('hero-animations-duration')[0];
+        
+        // Log performance if it exceeds 1 second threshold
+        if (measure && measure.duration > 1000) {
+          console.warn(`Hero animations took ${measure.duration}ms to complete`);
+        }
+      } catch (e) {
+        // Silently fail if performance measurement is not supported
+      }
+    });
+  };
+
+  // Cleanup function for removing event listeners
+  const cleanup = () => {
+    window.removeEventListener('scroll', requestParallaxUpdate);
+  };
+
+  // Initialize all features
+  const init = () => {
+    // Start performance measurement
+    measurePerformance();
+
+    // Initialize features
+    initParallax();
+    initSmoothScroll();
+    initScrollAnimations();
+    initButtonInteractions();
+
+    // Handle page visibility changes
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        // Pause animations when page is hidden
+        ticking = false;
+      } else {
+        // Resume animations when page is visible
+        if (!prefersReducedMotion() && getAnimationEnabled()) {
+          requestParallaxUpdate();
+        }
+      }
+    });
+
+    // Handle reduced motion preference changes
+    const motionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    motionMediaQuery.addEventListener('change', () => {
+      if (motionMediaQuery.matches) {
+        cleanup();
+        // Reset parallax transform
+        const heroBackground = document.querySelector('[data-parallax]');
+        if (heroBackground) {
+          heroBackground.style.transform = 'translate3d(0, 0, 0)';
+        }
+      } else {
+        initParallax();
+      }
+    });
+  };
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
   }
+
+  // Cleanup on page unload
+  window.addEventListener('beforeunload', cleanup);
 })();
